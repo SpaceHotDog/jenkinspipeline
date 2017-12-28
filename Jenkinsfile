@@ -2,12 +2,12 @@ pipeline {
     agent any
 
     parameters {
-         string(name: 'tomcat_dev', defaultValue: 'localhost:8090', description: 'Staging Server')
-         string(name: 'tomcat_prod', defaultValue: 'localhost:9090', description: 'Production Server')
+         string(name: 'tomcat_dev', defaultValue: '/home/usr1/Downloads/apache-tomcat-8.5.24-staging/', description: 'Staging Server')
+         string(name: 'tomcat_prod', defaultValue: '/home/usr1/Downloads/apache-tomcat-8.5.24-prod/', description: 'Production Server')
     }
 
     triggers {
-         pollSCM('* * * * *')
+         pollSCM('H * * * *')
      }
 
 stages{
@@ -27,13 +27,13 @@ stages{
             parallel{
                 stage ('Deploy to Staging'){
                     steps {
-                        sh "scp -i /home/jenkins/tomcat-demo.pem **/target/*.war ec2-user@${params.tomcat_dev}:/var/lib/tomcat7/webapps"
+                        sh "cp **/target/*.war ${params.tomcat_dev}webapps"
                     }
                 }
 
                 stage ("Deploy to Production"){
                     steps {
-                        sh "scp -i /home/jenkins/tomcat-demo.pem **/target/*.war ec2-user@${params.tomcat_prod}:/var/lib/tomcat7/webapps"
+                        sh "cp **/target/*.war ${params.tomcat_prod}webapps"
                     }
                 }
             }
